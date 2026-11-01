@@ -8,7 +8,7 @@ public record MovieSearchRequest(String title,
                                  String director,
                                  Integer limit) {
 
-    // hasText treats blank params as absent (analysis #12)
+    // hasText treats blank params as absent
     @AssertTrue(message = "At least one of title, genre or director is required")
     public boolean isAtLeastOneFilterPresent() {
         return StringUtils.hasText(title) || StringUtils.hasText(genre) || StringUtils.hasText(director);

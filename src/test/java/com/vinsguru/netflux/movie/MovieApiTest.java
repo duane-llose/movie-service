@@ -254,6 +254,51 @@ class MovieApiTest {
         assertThat(getIds("/api/movies/search?title=&genre=Drama")).containsExactly(1L, 3L, 5L);
     }
 
+    @Test
+    @DisplayName("Should return 405 ProblemDetail with Allow header when the method is not supported")
+    void shouldReturn405WhenMethodNotSupported() {
+        var problem = restTestClient.post()
+                .uri("/api/movies/{id}", 1)
+                .exchange()
+                .expectStatus().isEqualTo(405)
+                .expectHeader().exists("Allow")
+                .expectBody(ProblemDetail.class)
+                .returnResult()
+                .getResponseBody();
+
+        assertThat(problem.getStatus()).isEqualTo(405);
+    }
+
+    @Test
+    @DisplayName("Should return 404 ProblemDetail when the path is not mapped")
+    void shouldReturn404WhenPathNotMapped() {
+        var problem = restTestClient.get()
+                .uri("/api/unknown")
+                .exchange()
+                .expectStatus().isNotFound()
+                .expectBody(ProblemDetail.class)
+                .returnResult()
+                .getResponseBody();
+
+        assertThat(problem.getStatus()).isEqualTo(404);
+    }
+
+    @Test
+    @DisplayName("Should return 500 ProblemDetail without internal details when the database rejects a query")
+    void shouldReturn500WithoutInternalDetails() {
+        // PostgreSQL rejects a null byte in a text value, a real failure that needs no mocking
+        var problem = restTestClient.get()
+                .uri("/api/movies/search?title={title}", "\u0000")
+                .exchange()
+                .expectStatus().is5xxServerError()
+                .expectBody(ProblemDetail.class)
+                .returnResult()
+                .getResponseBody();
+
+        assertThat(problem.getStatus()).isEqualTo(500);
+        assertThat(problem.getDetail()).isEqualTo("An unexpected error occurred");
+    }
+
     private List<MovieSummary> getMovies(String uri, Object... uriVariables) {
         return restTestClient.get()
                 .uri(uri, uriVariables)

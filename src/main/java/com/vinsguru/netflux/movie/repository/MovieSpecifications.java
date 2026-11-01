@@ -18,7 +18,7 @@ public class MovieSpecifications {
         return containsIgnoreCase("director", director);
     }
 
-    // exact, case-sensitive array membership (analysis #4)
+    // exact, case-sensitive array membership
     public static Specification<Movie> hasGenre(String genre) {
         return (root, query, cb) ->
                 !StringUtils.hasText(genre) ? cb.conjunction() :
@@ -31,7 +31,7 @@ public class MovieSpecifications {
                 cb.like(cb.lower(root.get(attribute)), "%" + escapeLike(value).toLowerCase(Locale.ROOT) + "%", LIKE_ESCAPE);
     }
 
-    // analysis #18
+    // LIKE wildcards in user input match literally
     private static String escapeLike(String value) {
         return value.replace("\\", "\\\\")
                     .replace("%", "\\%")

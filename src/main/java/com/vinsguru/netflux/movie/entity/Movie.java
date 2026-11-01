@@ -13,10 +13,10 @@ import java.util.List;
 public class Movie {
 
     @Id
-    private Long id; // externally assigned: no @GeneratedValue (analysis #2)
+    private Long id; // externally assigned: no @GeneratedValue
 
     private String title;
-    private String director; // analysis #19
+    private String director;
     private Double voteAverage;
     private Integer voteCount;
     private LocalDate releaseDate;

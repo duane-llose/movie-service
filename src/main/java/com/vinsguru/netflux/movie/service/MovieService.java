@@ -23,7 +23,7 @@ public class MovieService {
     private static final int DEFAULT_LIMIT = 20;
     private static final int MAX_LIMIT = 100;
 
-    // analysis #11, #13, #15
+    // nulls last, ties broken by id for deterministic ordering
     private static final Sort MOST_VOTED_SORT = Sort.by(Sort.Order.desc("voteCount").nullsLast(), Sort.Order.asc("id"));
     private static final Sort LATEST_SORT = Sort.by(Sort.Order.desc("releaseDate").nullsLast(), Sort.Order.asc("id"));
 
@@ -39,7 +39,7 @@ public class MovieService {
                 .orElseThrow(() -> new MovieNotFoundException(id));
     }
 
-    // de-duplicated, input order kept, unknown IDs skipped (analysis #7, #8, #10)
+    // de-duplicated, input order kept, unknown IDs skipped
     public List<MovieSummary> findByIds(List<Long> ids) {
         var distinctIds = ids.stream()
                 .distinct()
@@ -58,7 +58,7 @@ public class MovieService {
         return findSummaries(Specification.unrestricted(), MOST_VOTED_SORT, limit);
     }
 
-    // future release dates are included (analysis #14)
+    // future release dates are included
     public List<MovieSummary> findLatest(Integer limit) {
         return findSummaries(Specification.unrestricted(), LATEST_SORT, limit);
     }
@@ -80,7 +80,7 @@ public class MovieService {
                 .toList();
     }
 
-    // missing or below 1 -> default; above max -> max (analysis #3, #6)
+    // missing or below 1 -> default; above max -> max
     private static int resolveLimit(Integer limit) {
         return Objects.isNull(limit) || limit < 1 ? DEFAULT_LIMIT : Math.min(limit, MAX_LIMIT);
     }
