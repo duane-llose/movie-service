@@ -23,9 +23,13 @@ public class MovieService {
     private static final int DEFAULT_LIMIT = 20;
     private static final int MAX_LIMIT = 100;
 
+    private static final String VOTE_COUNT = "voteCount";
+    private static final String RELEASE_DATE = "releaseDate";
+    private static final String ID = "id";
+
     // nulls last, ties broken by id for deterministic ordering
-    private static final Sort MOST_VOTED_SORT = Sort.by(Sort.Order.desc("voteCount").nullsLast(), Sort.Order.asc("id"));
-    private static final Sort LATEST_SORT = Sort.by(Sort.Order.desc("releaseDate").nullsLast(), Sort.Order.asc("id"));
+    private static final Sort MOST_VOTED_SORT = Sort.by(Sort.Order.desc(VOTE_COUNT).nullsLast(), Sort.Order.asc(ID));
+    private static final Sort LATEST_SORT = Sort.by(Sort.Order.desc(RELEASE_DATE).nullsLast(), Sort.Order.asc(ID));
 
     private final MovieRepository repository;
 
